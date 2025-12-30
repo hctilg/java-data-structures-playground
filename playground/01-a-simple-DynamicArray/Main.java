@@ -1,38 +1,7 @@
 import java.util.Arrays;
 
-class Tuple {
-    private int index;
-    private int value;
-
-    public Tuple(int index, int value) {
-        this.index = index;
-        this.value = value;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return "(" + index + ", " + value + ")";
-    }
-}
-
-class MahiDynamicArray {
-    private Tuple[] array;
+class MahiDynamicArray<T> {
+    private Object[] array;
     private int size;
     private int capacity;
     private static final int INITIAL_CAPACITY = 10;
@@ -40,7 +9,7 @@ class MahiDynamicArray {
 
     public MahiDynamicArray() {
         this.capacity = INITIAL_CAPACITY;
-        this.array = new Tuple[capacity];
+        this.array = new Object[capacity];
         this.size = 0;
     }
 
@@ -49,11 +18,11 @@ class MahiDynamicArray {
             throw new IllegalArgumentException("Initial capacity must be positive");
 
         this.capacity = initialCapacity;
-        this.array = new Tuple[capacity];
+        this.array = new Object[capacity];
         this.size = 0;
     }
 
-    public void set(int index, int value) {
+    public void set(int index, T value) {
         if (index < 0)
             throw new IndexOutOfBoundsException("Index cannot be negative: " + index);
 
@@ -61,8 +30,8 @@ class MahiDynamicArray {
         if (index >= capacity) ensureCapacity(index + 1);
         if (index >= size) size = index + 1;
 
-        if (array[index] != null) array[index].setValue(value);
-        else array[index] = new Tuple(index, value);
+        if (array[index] != null) ((Object[])array[index])[1] = value;
+        else array[index] = new Object[] {index, value};
     }
 
     public void delete(int index) {
@@ -75,14 +44,13 @@ class MahiDynamicArray {
         if (index == size - 1) updateSize();
     }
 
-    public Integer get(int index) {
-        if (index < 0 || index >= size) {
-            return null;
-        }
-        return array[index] != null ? array[index].getValue() : null;
+    @SuppressWarnings("unchecked")
+    public T get(int index) {
+        if (index < 0 || index >= size) return null;
+        return array[index] != null ? (T) ((Object[])array[index])[1] : null;
     }
 
-    public void add(int value) {
+    public void add(T value) {
         set(size, value);
     }
 
@@ -103,13 +71,14 @@ class MahiDynamicArray {
 
     // compact the array (remove empty gaps in the middle)
     public void compact() {
-        Tuple[] newArray = new Tuple[capacity];
+        Object[] newArray = new Object[capacity];
         int newSize = 0;
 
         for (int i = 0; i < size; i++) {
             if (array[i] != null) {
-                newArray[newSize] = array[i];
-                newArray[newSize].setIndex(newSize);
+                Object[] obj = (Object[]) array[i];
+                obj[0] = newSize;
+                newArray[newSize] = obj;
                 newSize++;
             }
         }
@@ -120,12 +89,18 @@ class MahiDynamicArray {
 
     public void display() {
         System.out.println("Dynamic Array contents (size=" + size + ", capacity=" + capacity + "):");
-        for (int i = 0; i < size; i++)
-            System.out.println("[" + i + "] = " + ( (array[i] != null) ? array[i] : "null" ));
+        for (int i = 0; i < size; i++) {
+            if (array[i] != null) {
+                Object[] obj = (Object[]) array[i];
+                System.out.println("[" + i + "] = (" + obj[0] + ", " + obj[1] + ")");
+            } else
+                System.out.println("[" + i + "] = null");
+        }
     }
 
-    public Tuple[] dump() {
-        return Arrays.copyOf(array, size);
+    public Object[] dump() {
+//        return Arrays.copyOf(array, size);
+        return array;
     }
 
     public void clear() {
@@ -150,15 +125,18 @@ class MahiDynamicArray {
     }
 
     // linear search to find a value
-    public int indexOf(int value) {
-        for (int i = 0; i < size; i++)
-            if (array[i] != null && array[i].getValue() == value) return i;
-
+    public int indexOf(T value) {
+        for (int i = 0; i < size; i++) {
+            if (array[i] != null) {
+                Object[] obj = (Object[]) array[i];
+                if (obj[1] != null && obj[1].equals(value)) return i;
+            }
+        }
         return -1;
     }
 
     // insert at a specific position with shifting elements
-    public void insertAt(int index, int value) {
+    public void insertAt(int index, T value) {
         if (index < 0 || index > size)
             throw new IndexOutOfBoundsException("Index out of bounds: " + index);
 
@@ -167,18 +145,21 @@ class MahiDynamicArray {
         // shift elements to the right
         for (int i = size; i > index; i--) {
             array[i] = array[i - 1];
-            if (array[i] != null) array[i].setIndex(i);
+            if (array[i] != null) {
+                Object[] obj = (Object[]) array[i];
+                obj[0] = i;
+            }
         }
 
-        array[index] = new Tuple(index, value);
+        array[index] = new Object[] {index, value};
         size++;
     }
 }
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("=== Test 1: Basic Operations ===");
-        MahiDynamicArray arr = new MahiDynamicArray(5);
+        System.out.println("=== Test 1: Basic Operations with Integer ===");
+        MahiDynamicArray<Integer> arr = new MahiDynamicArray<>(5);
 
         arr.set(0, 6547);
         arr.set(2, 100);
@@ -192,13 +173,14 @@ public class Main {
         System.out.println("\n=== Test 2: Auto-expansion ===");
         System.out.println("Initial capacity: " + arr.capacity());
 
-        arr.set(10, 999); // // index 10 which is beyond the initial capacity
+        arr.set(10, 999); // index 10 which is beyond the initial capacity
         System.out.println("After setting at index 10:");
         System.out.println("New capacity: " + arr.capacity());
         System.out.println("New size: " + arr.size());
         arr.display();
 
         System.out.println("\n=== Test 3: Add and Remove ===");
+        arr.delete(1);
         arr.add(111);
         arr.add(222);
         arr.display();
@@ -211,11 +193,11 @@ public class Main {
         System.out.println("\n=== Test 5: Compaction ===");
         arr.delete(1);
         arr.delete(3);
-        System.out.println("After deleting indices 1 and 3:");
+        System.out.println("\nAfter deleting indices 1 and 3:");
         arr.display();
 
         arr.compact();
-        System.out.println("After compaction:");
+        System.out.println("\nAfter compaction:");
         arr.display();
 
         System.out.println("\n=== Test 6: Search ===");
@@ -224,13 +206,9 @@ public class Main {
         System.out.println("Index of value 9999: " + arr.indexOf(9999));
 
         System.out.println("\n=== Test 7: Dump and Display ===");
-
         System.out.println("\n ------ Dump ------ \n");
-        Tuple[] allArrayList = arr.dump();
-        String joined = Arrays.stream(allArrayList)
-            .map(t -> t == null ? "null" : t.toString())
-            .collect(java.util.stream.Collectors.joining(", "));
-        System.out.println("[" + joined + "]");
+        Object[] allArrayList = arr.dump();
+        System.out.println(Arrays.toString(allArrayList));
 
         System.out.println("\n ------ Display ------ \n");
         arr.display();
@@ -239,5 +217,15 @@ public class Main {
         arr.clear();
         System.out.println("After clear - Size: " + arr.size());
         System.out.println("Is empty: " + arr.isEmpty());
+
+        System.out.println("\n=== Test 9: Test with String ===");
+        MahiDynamicArray<String> strArr = new MahiDynamicArray<>();
+        strArr.add("Hello");
+        strArr.add("World");
+        strArr.set(5, "Java");
+        strArr.display();
+
+        System.out.println("\nValue at index 5: " + strArr.get(5));
+        System.out.println("Index of 'World': " + strArr.indexOf("World"));
     }
 }
