@@ -21,7 +21,6 @@ class SinglyLinkedList<T> {
         size++;
     }
 
-    // O(1)
     public void addFirst(T value) {
         Node<T> newNode = new Node<>(value);
 
@@ -69,7 +68,7 @@ class SinglyLinkedList<T> {
         Node<T> current = head;
 
         while (current != null) {
-            if (value == null ? current.value == null : value.equals(current.value)) return true;
+            if (Objects.equals(value, current.value)) return true;
             current = current.next;
         }
         return false;
