@@ -1,4 +1,4 @@
-I read https://en.wikipedia.org/wiki/Linked_list and write this :yawning_face:
+I read https://en.wikipedia.org/wiki/Linked_list and wrote this :yawning_face:
 
 [Source](Main.java)
 
