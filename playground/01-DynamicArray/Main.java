@@ -1,19 +1,19 @@
 import java.util.Arrays;
 
-class MahiDynamicArray<T> {
+class MyDynamicArray<T> {
     private Object[] array;
     private int size;
     private int capacity;
     private static final int INITIAL_CAPACITY = 10;
     private static final double GROWTH_FACTOR = 1.5;
 
-    public MahiDynamicArray() {
+    public MyDynamicArray() {
         this.capacity = INITIAL_CAPACITY;
         this.array = new Object[capacity];
         this.size = 0;
     }
 
-    public MahiDynamicArray(int initialCapacity) {
+    public MyDynamicArray(int initialCapacity) {
         if (initialCapacity <= 0)
             throw new IllegalArgumentException("Initial capacity must be positive");
 
@@ -99,8 +99,8 @@ class MahiDynamicArray<T> {
     }
 
     public Object[] dump() {
-//        return Arrays.copyOf(array, size);
-        return array;
+       return Arrays.copyOf(array, size);
+        // return array;
     }
 
     public void clear() {
@@ -159,7 +159,7 @@ class MahiDynamicArray<T> {
 public class Main {
     public static void main(String[] args) {
         System.out.println("=== Test 1: Basic Operations with Integer ===");
-        MahiDynamicArray<Integer> arr = new MahiDynamicArray<>(5);
+        MyDynamicArray<Integer> arr = new MyDynamicArray<>(5);
 
         arr.set(0, 6547);
         arr.set(2, 100);
@@ -219,7 +219,7 @@ public class Main {
         System.out.println("Is empty: " + arr.isEmpty());
 
         System.out.println("\n=== Test 9: Test with String ===");
-        MahiDynamicArray<String> strArr = new MahiDynamicArray<>();
+        MyDynamicArray<String> strArr = new MyDynamicArray<>();
         strArr.add("Hello");
         strArr.add("World");
         strArr.set(5, "Java");

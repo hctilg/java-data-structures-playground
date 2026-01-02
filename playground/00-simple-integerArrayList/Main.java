@@ -28,10 +28,10 @@ class Tuple {
     }
 }
 
-class MahiArrayList {
+class MyArrayList {
     private List<Tuple> list;
 
-    public MahiArrayList() {
+    public MyArrayList() {
         list = new ArrayList<>();
     }
 
@@ -83,36 +83,36 @@ class MahiArrayList {
 
 public class Main {
     public static void main(String[] args) {
-        MahiArrayList mahiList = new MahiArrayList();
+        MyArrayList MyList = new MyArrayList();
 
         System.out.println("=== Seting values ===");
-        mahiList.set(0, 6547);
-        mahiList.set(7, 2);
-        mahiList.set(3, 100);
-        mahiList.display();
+        MyList.set(0, 6547);
+        MyList.set(7, 2);
+        MyList.set(3, 100);
+        MyList.display();
 
         System.out.println("\n=== Updating value ===");
-        mahiList.set(0, 9999);
-        mahiList.display();
+        MyList.set(0, 9999);
+        MyList.display();
 
         System.out.println("\n=== Getting values ===");
-        System.out.println("Value at index 0: " + mahiList.get(0));
-        System.out.println("Value at index 7: " + mahiList.get(7));
-        System.out.println("Value at index 5 (doesn't exist): " + mahiList.get(5));
+        System.out.println("Value at index 0: " + MyList.get(0));
+        System.out.println("Value at index 7: " + MyList.get(7));
+        System.out.println("Value at index 5 (doesn't exist): " + MyList.get(5));
 
         System.out.println("\n=== Deleting value ===");
-        mahiList.delete(7);
-        mahiList.display();
+        MyList.delete(7);
+        MyList.display();
 
         System.out.println("\n=== Checking index existence ===");
-        System.out.println("Does index 3 exist? " + mahiList.containsIndex(3));
-        System.out.println("Does index 7 exist? " + mahiList.containsIndex(7));
+        System.out.println("Does index 3 exist? " + MyList.containsIndex(3));
+        System.out.println("Does index 7 exist? " + MyList.containsIndex(7));
 
         System.out.println("\n=== General information ===");
-        System.out.println("Number of ArrayList: " + mahiList.size());
+        System.out.println("Number of ArrayList: " + MyList.size());
 
         System.out.println("\n=== All ArrayList ===");
-        List<Tuple> allArrayList = mahiList.dump();
+        List<Tuple> allArrayList = MyList.dump();
         for (Tuple tuple : allArrayList) System.out.println(tuple);
     }
 }
